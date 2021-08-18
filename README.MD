@@ -2,7 +2,7 @@
 
 # Survival guide for HPC system of HHU
 
-$Authors: Nikolas Adaloglou, Julius Ramarkes$
+**Authors: Nikolas Adaloglou, Julius Ramarkes**
 
 For the whole guide use your HHU university login name + password. For access to the computers you need to enable openvpn:
 
@@ -112,15 +112,15 @@ As you can see all 10 GPU's are free right now!
 
 For extensive file transfer it is recommended to use [storage.hpc.rz.uni-duesseldorf.de](http://storage.hpc.rz.uni-duesseldorf.de/), you can copy and paste using scp:
 
+You can run the commands from your **local** terminal!
+
 #### Send files using scp
 
-From your local terminal:
-
-`$ scp file.zip adaloglo@storage.hpc.rz.uni-duesseldorf.de:/gpfs/project/<username>/<project_folder>`
+`$ scp file.zip <username>@storage.hpc.rz.uni-duesseldorf.de:/gpfs/project/<username>/<project_folder>`
 
 #### Receive files using scp
 
-`$ scp adaloglo@storage.hpc.rz.uni-duesseldorf.de:/gpfs/project/<username>/<project_folder>/<file.zip>  ./ `
+`$ scp <username>@storage.hpc.rz.uni-duesseldorf.de:/gpfs/project/<username>/<project_folder>/<file.zip>  ./ `
 
 
 
@@ -157,7 +157,7 @@ module load TensorFlow/1.14
 python /gpfs/project/<username>/<project_folder>/main.py # modify
 ```
 
-
+You can create your file with ``` $ touch run_my_code.sh ``` and then `$ nano run_my_code.sh`
 
 ## Launch interactive sessions on HPC to test your code 
 
@@ -183,15 +183,29 @@ pip install --upgrade --user  --target=/gpfs/project/adaloglo/site-packages  -i 
 
 #### Install requirements.txt locally (TODO)
 
-...
+```
+module load module load PyTorch/1.8.0
+pip install --upgrade --user  -i http://pypi.repo.test.hhu.de/simple/ --trusted-host pypi.repo.test.hhu.de -r requirements.txt
+
+export PYTHONPATH=/home/adaloglo/.local/lib/python3.6/site-packages:$PYTHONPATH
+```
 
 
+
+
+
+```
+pip install --upgrade --user -i http://pypi.repo.test.hhu.de/simple/ --trusted-host pypi.repo.test.hhu.de scikit-learn
+
+export PYTHONPATH=/home/<username>/.local/lib/python3.6/site-packages:$PYTHONPATH
+export PYTHONPATH=/home/adaloglo/.local/lib/python3.6/site-packages:$PYTHONPATH
+```
 
 
 
 ## NOT for HPC: Develop interactively with Jupyter server (todo test)
 
-ssh `<username>@servername` like: `ssh adaloglo@134.99.222.53`
+ssh `<username>@servername` 
 
 #### Remote - server side 
 
@@ -211,9 +225,12 @@ ssh `<username>@servername` like: `ssh adaloglo@134.99.222.53`
 - To access the notebook, open this file in a browser:
      file:///home/adaloglo/.local/share/jupyter/runtime/nbserver-183700-open.html
    Or copy and paste one of the shown URLs.
-  
+
   
 
 #### Local/client side:
 - Port forwarding, here e.g. for port 8916:  `ssh -L 8916:localhost:8916 <username>@<server_id>`
 - Local browser URL open: http://127.0.0.1:8916/?token=85fdfa86bf95d2bbd0e4e42af536de1126c55e8bf66e398b
+
+
+
