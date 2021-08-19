@@ -17,7 +17,7 @@ $ sudo openvpn HHU-VPN.ovpn
 
 1. Fill out the [form](https://www.zim.hhu.de/forschung/high-performance-computing/antrag) to get access to the computer
 
-2. On a Linux terminal run `$ssh <username>@hpc.rz.uni-duesseldorf.de` . In my case`$ssh adaloglo@hpc.rz.uni-duesseldorf.de`
+2. On a Linux terminal run `$ssh <username>@hpc.rz.uni-duesseldorf.de` . In my case `$ssh adaloglo@hpc.rz.uni-duesseldorf.de`
 
 3. See all the install software/libraries like CUDA versions and python libraries (Tensorflow, Pytorch) with `$ module avail`
 
@@ -55,7 +55,7 @@ You can load modules directly in the terminal like `module load PyTorch/1.8.0` .
 
    
 
-Then, you will need to transfer your code + data in this folder. Before that, take a look at the resource managment:
+Then, you will need to transfer your code + data in this folder. Before that, take a look at the resource management:
 
 ## General purpose stuff - resource management
 
@@ -163,10 +163,10 @@ You can create your file with ``` $ touch run_my_code.sh ``` and then `$ nano ru
 
  In the ssh HPC login shell you can also **interactively** ask for more resources, e.g. 2CPUs and 5GB would be: 
 
-```qsub -A DeepGenome -I -l select=1:ncpus=2:mem=5G -l walltime=12:00:00```
+```qsub -A DeepGenome -I -l select=1:ncpus=2:mem=15G:ngpus=2:accelerator_model=gtx1080ti -l walltime=12:00:00```
 
 
-## Install your Python packages locally (TODO test)
+## Install your Python packages locally
 
 - Here is a list of **trusted** [python packages](http://pypi.repo.test.hhu.de/simple/) that can be installed. If the package that you need is not available you need to contact the HPC team at `hpc-support [at] uni-duesseldorf.de `
 
@@ -175,31 +175,73 @@ You can **locally** install the packages like this:
 ```
 pip install --upgrade --target=<your-project/user-folder>/site-packages -i http://pypi.repo.test.hhu.de/simple/ --trusted-host pypi.repo.test.hhu.de <your-awesome-package>
 ```
-Here is an example to use  `pytorch-lightning`
+Here is an example to use  `einops`
 ```
 module load module load PyTorch/1.8.0
-pip install --upgrade --user  --target=/gpfs/project/adaloglo/site-packages  -i http://pypi.repo.test.hhu.de/simple/ --trusted-host pypi.repo.test.hhu.de pytorch-lightning
+pip install --upgrade --user  --target=/gpfs/project/adaloglo/site-packages  -i http://pypi.repo.test.hhu.de/simple/ --trusted-host pypi.repo.test.hhu.de einops
+```
+If you don't want to specify the `--target`:
+```
+pip install --upgrade --user  -i http://pypi.repo.test.hhu.de/simple/ --trusted-host pypi.repo.test.hhu.de einops
 ```
 
-#### Install requirements.txt locally (TODO)
+#### Install requirements.txt locally 
+
+The best practice here is to be very specific about your pip package versions. Here is an example of my `requirements.txt` file:
+```
+torch==1.8.1
+torchvision==0.9.1
+pandas>=1.1.5
+omegaconf>=2.0.6
+lightning-bolts==0.3.3
+pytorch-lightning==1.3.2
+einops>=0.3.0
+scikit-learn>=0.24.2
+```
 
 ```
-module load module load PyTorch/1.8.0
+module load Python/3.6.5
+module load CUDA/10.2.89
+
 pip install --upgrade --user  -i http://pypi.repo.test.hhu.de/simple/ --trusted-host pypi.repo.test.hhu.de -r requirements.txt
-
-export PYTHONPATH=/home/adaloglo/.local/lib/python3.6/site-packages:$PYTHONPATH
 ```
 
 
-
-
-
+Then you can open a python terminal and test your imports. If the packages are not recognized (not observed so far) consider exporting the --target path to PYTONPATH or if you use the default:
 ```
 pip install --upgrade --user -i http://pypi.repo.test.hhu.de/simple/ --trusted-host pypi.repo.test.hhu.de scikit-learn
 
 export PYTHONPATH=/home/<username>/.local/lib/python3.6/site-packages:$PYTHONPATH
-export PYTHONPATH=/home/adaloglo/.local/lib/python3.6/site-packages:$PYTHONPATH
 ```
+
+## Debug/Test you code before launching the job
+Now that your data and code is in the server time to see what's happening. Start an interactive session with minimal requirements:
+
+
+```
+qsub -A DeepGenome -I -l select=1:ncpus=2:mem=10G:ngpus=1:accelerator_model=gtx1080ti -l walltime=2:00:00
+```
+Set your number of workers and you available GPU's accordinly. You can type `nvidia-smi` to see the available requested GPU. A good practice is to do this before any other import:
+
+```
+os.environ['CUDA_VISIBLE_DEVICES'] = "5"
+```
+The example uses the GPU with GPU_ID 5, based on `nvidia-smi`.
+
+Now you can execute the lines of the .sh script:
+
+```
+module load Python/3.6.5
+module load PyTorch/1.8.0 
+
+cd /gpfs/project/<username>/<project_folder>
+pip install --upgrade --user  -i http://pypi.repo.test.hhu.de/simple/ --trusted-host pypi.repo.test.hhu.de -r requirements.txt
+
+#python -m hello_world # to tests imports
+python -m main_hpc_code_script
+```
+
+
 
 
 
