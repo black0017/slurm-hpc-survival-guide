@@ -221,7 +221,7 @@ Now that your data and code is in the server time to see what's happening. Start
 ```
 qsub -A DeepGenome -I -l select=1:ncpus=2:mem=10G:ngpus=1:accelerator_model=gtx1080ti -l walltime=2:00:00
 ```
-Set your number of workers and you available GPU's accordinly. You can type `nvidia-smi` to see the available requested GPU. A good practice is to do this before any other import:
+Set your number of workers and you available GPU's accordingly. You can type `nvidia-smi` to see the available requested GPU. A good practice is to do this before any other import:
 
 ```
 os.environ['CUDA_VISIBLE_DEVICES'] = "5"
@@ -241,6 +241,42 @@ pip install --upgrade --user  -i http://pypi.repo.test.hhu.de/simple/ --trusted-
 python -m main_hpc_code_script
 ```
 
+
+
+
+
+
+## Unzip your data
+
+After sending your data over you have to check the `md5sum` hash code to see if the data were transmitted correctly:
+```
+md5sum file.zip
+```
+
+The output should match your local file.
+
+It is reccomended to unzip your files in an interactive session:
+```
+qsub -A DeepGenome -I -l select=1:ncpus=1:mem=15G -l walltime=3:00:00
+```
+#### Unzipping options
+```
+unzip file.zip
+```
+
+if that doesn't work you can try:
+
+```
+module load Java/11.0.2
+jar xf file.zip
+```
+
+Another alternative is to re-zip with tar and unzip it like this:
+
+```
+tar --create --verbose --gzip --file=CheX.tar.gz file*/
+tar xzvf CheX.tar.gz
+```
 
 
 
