@@ -281,8 +281,7 @@ tar xzvf CheX.tar.gz
 
 
 
-## NOT for HPC: Develop interactively with Jupyter server (todo test)
-
+## NOT for HPC: Develop interactively with Jupyter server 
 ssh `<username>@servername` 
 
 #### Remote - server side 
@@ -291,24 +290,27 @@ ssh `<username>@servername`
 - create virtual environment `virtualenv --python=python3.6 ~/test_env` or `virtualenv-3  --python=python3.6 ~/test_env`
 
 - load virtualenv `$ source ~/test_env/bin/activate`
+-  `$ pip install jupyter ipykernel`
 
 - install project requirements, including jupyter `pip install -r requirements.txt`
 
 - start jupyter server:    
-
-  ```  jupyter notebook --no-browser --port=8916 >~/jupyter_lab_output_8916_$(date +"%Y%m%d").txt 2>&1 &   ```
+ ``` jupyter notebook --no-browser --port=8889   ```
+  ```  jupyter notebook --no-browser --port=8889 >~/jupyter_lab_output_8889_$(date +"%Y%m%d").txt 2>&1 &   ```
 
 - Look into the newly generated text file -> web URL for local browser.
   
-- To access the notebook, open this file in a browser:
-     file:///home/adaloglo/.local/share/jupyter/runtime/nbserver-183700-open.html
-   Or copy and paste one of the shown URLs.
+- To access the jupyter, you first need to set up the client side
+- When you do so you can probably copy & paste the shown URLs in your local browser
 
-  
 
 #### Local/client side:
-- Port forwarding, here e.g. for port 8916:  `ssh -L 8916:localhost:8916 <username>@<server_id>`
-- Local browser URL open: http://127.0.0.1:8916/?token=85fdfa86bf95d2bbd0e4e42af536de1126c55e8bf66e398b
+- Port forwarding, here e.g. for port 8916:  
+  ```
+  $ ssh -N -f -L localhost:8888:localhost:8889 <username>@<server_id>
+  $ ssh -L 8916:localhost:8916 <username>@<server_id>
+  ```
+- Local browser URL open: `localhost:8888` or `localhost:8916`  (token authentication required)
 
 
 
